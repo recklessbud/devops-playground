@@ -6,3 +6,9 @@ Here are some useful commands that you might need while troubleshooting in the L
 - `ss -tuln`: Display all listening ports and their associated services.
 - `lsof -i :<port_number>`: List open files and the processes using the specified port.
 - `kill -9 <PID>`: Forcefully terminate a process by its PID.
+
+
+## Permission-denied
+- `ls -l /path/to/file_or_directory`: Check the current permissions of a file or directory.
+- `stat /path/to/file_or_directory`: Get information about a file or directory.
+- `chmod (u+rwx or 600 ) /path/to/file_or_directory`: Change the permissions of a
