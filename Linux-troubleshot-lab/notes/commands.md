@@ -18,3 +18,10 @@ Here are some useful commands that you might need while troubleshooting in the L
 - `dd if=/dev/zero of=~/junk/biggest bs=1M count=1024`: make a dummy file taking 1gb of space
 - `df -h`: Check disk space usage of all mounted filesystems in a human-readable format.
 - `du -sh ~/*`: report and analyse the information of disk usage
+
+
+## Service-wont-start
+- `sudo systemctl daemon-reload`: make the service.unit executable by systemd
+- `sudo systemctl start service or service.unit`: start the service
+- `sudo systemctl status service`: check the status of the service
+- `sudo journalctl -u service`: view the service logs in real time
