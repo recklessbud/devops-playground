@@ -1,2 +1,6 @@
 .qodo
 .git
+.python-version
+.venv
+__pycache__
+uv.lock
