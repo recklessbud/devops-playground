@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: single-pod-depl
+  labels:
+    app: single-pod-depl
+
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: single-pod-depl
+  template:
+    metadata:
+      labels:
+        app: single-pod-depl  
+
+    
+    spec:
+      containers:
+      - name: single-pod-depl
+        image: bureck/k8s-single-pod:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
