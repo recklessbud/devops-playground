@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: configmap
+
+data:
+  GREETINGS: "Hola"
+  DB_URL: "sqlite3://///test.db"
+  SECRET_KEY: "supersecretkey"
+  DEBUG: "true"
