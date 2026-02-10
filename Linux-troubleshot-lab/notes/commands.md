@@ -25,3 +25,10 @@ Here are some useful commands that you might need while troubleshooting in the L
 - `sudo systemctl start service or service.unit`: start the service
 - `sudo systemctl status service`: check the status of the service
 - `sudo journalctl -u service`: view the service logs in real time
+
+
+## CPU spike / high memory usage
+- `top`: Display a real-time view of the system's resource usage, including CPU and memory usage for each process.
+- `ps aux | grep <>` 
+- `htop`: An interactive process viewer that provides a more user-friendly interface for monitoring system resources.
+- `kill -9 <PID>`: Forcefully terminate a process by its PID.

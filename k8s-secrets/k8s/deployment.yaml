@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: with-secrets
+  labels:
+    app: with-secrets
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: with-secrets
+  template:
+    metadata:
+      labels:
+        app: with-secrets
+    spec:
+      containers:
+      - name: with-secrets
+        image: bureck/k8s-single-pod:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 60004
