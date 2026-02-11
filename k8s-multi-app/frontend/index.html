@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>K8s Frontend → Backend Demo</title>
+
+  <!-- env.js will be generated at container startup -->
+  <script src="env.js"></script>
+
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      padding: 40px;
+      background: #f4f4f4;
+    }
+
+    button {
+      padding: 12px 18px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    pre {
+      background: #111;
+      color: #0f0;
+      padding: 16px;
+      margin-top: 20px;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Frontend → Backend Kubernetes Demo</h1>
+
+  <button onclick="callBackend()">Call Backend API</button>
+
+  <pre id="output">Waiting...</pre>
+
+  <script>
+    async function callBackend() {
+      const output = document.getElementById("output");
+
+      try {
+        const url = window.ENV?.BACKEND_URL + "/api/env";
+
+        output.textContent = "Calling: " + url;
+
+        const res = await fetch(url);
+        const text = await res.json();
+
+        output.textContent = text.GREETINGS;
+
+      } catch (err) {
+        output.textContent = "Error:\n" + err.message;
+      }
+    }
+  </script>
+
+</body>
+</html>
