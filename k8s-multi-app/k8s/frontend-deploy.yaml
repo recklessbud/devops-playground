@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-frontend1
+  labels:
+    app: app-frontend1
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-frontend1
+  template:
+    metadata:
+      labels:
+        app: app-frontend1
+    spec:
+      restartPolicy: Always
+      containers:
+      - name: frontend-app
+        image: bureck/single-html:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+        env:
+        - name: BACKEND_URL
+          valueFrom:
+            configMapKeyRef:
+              name: apps-configmap
+              key: BACKEND_URl

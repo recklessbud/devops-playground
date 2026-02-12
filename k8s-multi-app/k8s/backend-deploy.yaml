@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-backend1
+  labels:
+    app: app-backend1
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-backend1
+  template:
+    metadata:
+      labels:
+        app: app-backend1
+    spec:
+      restartPolicy: Always
+      containers:
+      - name: single-pod
+        image: bureck/k8s-single-pod:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 60004
+        env:
+        - name: FRONTEND_API
+          valueFrom:
+            configMapKeyRef:
+              name: apps-configmap
+              key: FRONTEND_API
+        envFrom:
+        - secretRef:
+            name: secret1
