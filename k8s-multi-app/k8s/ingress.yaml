@@ -20,7 +20,7 @@ spec:
                   number: 80
 
           # backend API
-          - path: /
+          - path: /api
             pathType: Prefix
             backend:
               service:
