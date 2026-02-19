@@ -1,3 +1,5 @@
+#! /usr/bin/env bash
+
 ## Break the dns resolution
 
     # open the /etc/resolve.conf file and change the nameserver to a dummy
