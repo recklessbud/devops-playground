@@ -9,4 +9,6 @@ This scenario deploys a Prometheus Stack consisting of Prometheus, Grafana, and 
 
 
 ### Goal
- Set up Prometheus and Grafana on an ec2 instance to 
+ Set up Prometheus and Grafana on an ec2 instance to monitor and observe the server components usage and application performance.
+
+
