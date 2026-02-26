@@ -1,0 +1,11 @@
+[
+    {
+      "labels": {
+        "job": "Host"
+      },
+      "targets": [
+        "node-exporter:9100", "host.docker.internal:8080" 
+      ]
+
+    }
+]

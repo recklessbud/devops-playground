@@ -1,0 +1,47 @@
+version: '3'
+
+vars:
+  FILE: ./prometheus/prometheus.yml
+  FILE2: ./prometheus/targets.json
+  LOCAL: 127.0.0.1
+
+tasks:
+  service-discovery:
+    desc: "Replace local IP with public IP in config files"
+    vars:
+      PUB_IP:
+        sh: curl -s ifconfig.io
+    cmds:
+      - echo "***************************************"
+      - echo "****SERVICE DISCOVERY OF PUBLIC IP*****"
+      - echo "*****PUBLIC IPADDRESS {{.PUB_IP}}******"
+      - echo "******LOOPBACK ADDRESS {{.LOCAL}}******"
+      - sed -i "s/{{.LOCAL}}/{{.PUB_IP}}/g" {{.FILE}}
+      - echo "******UPDATED FILE prometheus.yml******"
+      - cat {{.FILE}}
+      - sed -i "s/{{.LOCAL}}/{{.PUB_IP}}/g" {{.FILE2}}
+      - echo "*******UPDATED FILE targets.json*******"
+      - cat {{.FILE2}}
+      - echo "***************************************"
+
+  rollback:
+    desc: "Replace public IP with local IP in config files"
+    vars:
+      PUB_IP:
+        sh: curl -s ifconfig.io
+    cmds:
+      - echo "***************************************"
+      - echo "*****ROLLBACK OF SERVICE DISCOVERY*****"
+      - echo "******PUBLIC IPADDRESS {{.PUB_IP}}*****"
+      - echo "******LOOPBACK ADDRESS {{.LOCAL}}******"
+      - sed -i "s/{{.PUB_IP}}/{{.LOCAL}}/g" {{.FILE}}
+      - echo "******UPDATED FILE prometheus.yml******"
+      - cat {{.FILE}}
+      - sed -i "s/{{.PUB_IP}}/{{.LOCAL}}/g" {{.FILE2}}
+      - echo "*******UPDATED FILE targets.json*******"
+      - cat {{.FILE2}}
+      - echo "****************************************"
+
+  default:
+    cmds:
+      - task: service-discovery

@@ -1,0 +1,67 @@
+groups:
+  - name: server-alerts
+    rules:
+      - alert: InstanceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Instance {{ $labels.instance }} is down"
+          description: "Instance has been down for more than 1 minute."
+
+      - alert: HighCPUUsage
+        expr: sum by (instance) (irate(node_cpu_seconds_total{mode="system"}[5m])) * 100 > 80
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage detected on {{ $labels.instance }}"
+          description: "CPU usage is above 80% for more than 1 minute."
+
+      - alert: HighStorageUsage
+        expr: (node_filesystem_size_bytes{mountpoint="/"} - node_filesystem_avail_bytes{mountpoint="/"}) / node_filesystem_size_bytes{mountpoint="/"} > 0.9
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High storage usage detected on {{ $labels.instance }}"
+          description: "Storage usage is above 90% for more than 2 minutes."
+
+      - alert: HighMemoryUsage
+        expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes > 0.9
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High memory usage detected on {{ $labels.instance }}"
+          description: "Memory usage is above 90% for more than 2 minutes."
+
+  - name: webapp-alerts
+    rules:
+      - alert: HighErrorRate
+        expr: sum(rate(http_requests_total{status=~"5.."}[5m])) / sum(rate(http_requests_total[5m])) * 100 > 5
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High Error Rate on {{ $labels.instance }}"
+          description: "More than 5% of HTTP requests are failing with 5xx Server Errors over the last 5 minutes."
+
+      - alert: APIResponseTooSlow
+        expr: sum(rate(http_request_duration_seconds_sum[5m])) / sum(rate(http_request_duration_seconds_count[5m])) > 2
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "API is extremely slow on {{ $labels.instance }}"
+          description: "The average response time for the web app has been over 2 seconds for the last 2 minutes."
+
+      - alert: TrafficDroppedToZero
+        expr: sum(rate(http_requests_total[5m])) == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "No traffic on {{ $labels.instance }}"
+          description: "The application has received exactly zero HTTP requests in the last 5 minutes. Did the load balancer break?"
