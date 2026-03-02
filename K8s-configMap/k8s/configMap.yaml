@@ -8,3 +8,4 @@ data:
   DB_URL: "sqlite3://///test.db"
   SECRET_KEY: "supersecretkey"
   DEBUG: "true"
+  FRONTEND_API: "http://localhost:3000"

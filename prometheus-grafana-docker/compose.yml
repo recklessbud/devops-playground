@@ -39,31 +39,33 @@ services:
     networks:
       - monitor
 
-  # server:
-  #   image: bureck/ws101:latest
-  #   container_name: webapp
-  #   ports:
-  #     - 8080:8080
-  #   environment:
-  #     - JWT_SECRET=22719f3cc69f3484569a2414d1d847c9799c8000aa99bb039905a391942ab977744ee41efa55292d64c
-  #     - DB_URL=postgresql://postgres:postgres@db:5432/monitor
-  #     - JWT_ALGORITHM=HS256
-  #   restart: always
-  #   networks:
-  #     - monitor
+  server:
+    image: bureck/ws101:latest
+    container_name: webapp
+    ports:
+      - 8080:8080
+    environment:
+      - JWT_SECRET=22719f3cc69f3484569a2414d1d847c9799c8000aa99bb039905a391942ab977744ee41efa55292d64c
+      - DB_URL=postgresql://postgres:postgres@db:5432/monitor
+      - JWT_ALGORITHM=HS256
+    restart: always
+    depends_on:
+      - db
+    networks:
+      - monitor
 
-  # db:
-  #   image: postgres:latest
-  #   container_name: db
-  #   ports:
-  #     - 5432:5432
-  #   environment:
-  #     - POSTGRES_USER=postgres
-  #     - POSTGRES_PASSWORD=postgres
-  #     - POSTGRES_DB=monitor
-  #   restart: always
-  #   networks:
-  #     - monitor
+  db:
+    image: postgres:latest
+    container_name: db
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=monitor
+    restart: always
+    networks:
+      - monitor
 
 
 
