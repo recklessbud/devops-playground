@@ -1,0 +1,53 @@
+services:
+  loki:
+    image: grafana/loki:latest
+    ports:
+      - 3100:3100
+    volumes:
+      - ./loki-config.yml:/etc/loki/loki-config.yaml
+    networks:
+      - logging
+
+  promtail:
+    image: grafana/promtail:latest
+    volumes:
+      - ./promtail-config.yml:/etc/promtail/promtail-config.yaml
+      - /var/log:/var/log:ro                                       
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro    
+      - /var/run/docker.sock:/var/run/docker.sock                 
+    command: -config.file=/etc/promtail/promtail-config.yaml  
+    ports:
+      - 9080:9080
+    networks:
+      - logging
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - 3000:3000
+    depends_on:
+      - prometheus
+    networks:
+      - logging
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus-config.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - 9090:9090
+    networks:
+      - logging 
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    ports:
+      - 9100:9100
+    restart: always
+    networks:
+      - logging
+
+networks:
+  logging:
+    driver: bridge
