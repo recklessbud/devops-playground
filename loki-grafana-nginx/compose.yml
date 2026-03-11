@@ -1,0 +1,92 @@
+services:
+  some-backend:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    restart: always
+    volumes:
+      - app_logs:/var/log/myapp
+    ports:
+      - 8070:8070
+    networks:
+      - monitoring
+  
+  nginx:
+    image: nginx:latest
+    restart: always
+    volumes:
+      - nginx_logs:/var/log/nginx
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - 80:80
+    networks:
+      - monitoring
+
+  nginx-exporter:
+    image: nginx/nginx-prometheus-exporter:latest
+    restart: always
+    command: -nginx.scrape-uri=http://nginx:80/stub_status
+    ports: 
+      - 9113:9113
+    networks:
+      - monitoring
+
+
+  promtail:
+    image: grafana/promtail:latest
+    depends_on:
+      - loki                 
+    volumes:
+      - ./promtail-config.yml:/etc/promtail/promtail-config.yaml
+      - /var/log:/var/log
+      - app_logs:/var/log/myapp 
+      - nginx_logs:/var/log/nginx
+      - /var/lib/docker/containers:/var/lib/docker/containers  
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: always
+    command: -config.file=/etc/promtail/promtail-config.yaml
+    ports:
+      - 9080:9080
+    networks:
+      - monitoring
+
+  loki:
+    image: grafana/loki:latest
+    ports:
+      - 3100:3100
+    volumes:
+      - ./loki-config.yml:/etc/loki/loki-config.yaml
+    command: -config.file=/etc/loki/loki-config.yaml
+    networks:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - 3000:3000
+    depends_on:
+      - loki
+      - prometheus
+    networks:
+      - monitoring
+
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./prometheus-config.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - 9090:9090
+    networks:
+      - monitoring
+
+
+
+volumes:
+  app_logs:
+  nginx_logs:
+  
+
+
+networks:
+  monitoring:
+    driver: bridge
