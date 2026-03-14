@@ -1,0 +1,8 @@
+[
+  {
+    "labels": {
+      "job": "Host"
+    },
+    "targets": ["postgres_exporter:9187", "node-exporter:9100", "app-c:8070", "nginx-exporter:9113"]
+  }
+]
