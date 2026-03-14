@@ -1,0 +1,69 @@
+name: ${PROJECT_NAME}
+
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    container_name: ${APP_CONTAINER_NAME}
+    ports:
+      - 8070:8070
+    volumes:
+      - app_logs:/var/log/myapp
+    env_file:
+      - .env
+    depends_on:
+      database:
+        condition: service_healthy
+    networks:
+      - monitoring
+
+  nginx:
+    image: nginx:latest
+    restart: always
+    volumes:
+      - nginx_logs:/var/log/nginx
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - 80:80
+    depends_on:
+      - api
+    networks:
+      - monitoring
+  
+    
+  database:
+    restart: always
+    image: postgres:17.5-alpine3.22
+    container_name: ${POSTGRES_CONTAINER_NAME}
+    env_file:
+      - .env
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    healthcheck:
+      test: ["CMD-SHELL", "psql -U ${POSTGRES_USER} -d ${POSTGRES_DB} -c 'SELECT 1'"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - monitoring
+
+
+volumes:
+  postgres-data:
+  app_logs:
+  nginx_logs:
+
+
+
+networks:
+  monitoring:
+    driver: bridge
