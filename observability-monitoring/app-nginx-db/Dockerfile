@@ -33,4 +33,4 @@ RUN mkdir -p /var/log/myapp
 
 EXPOSE 8070
 
-CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8070"]
+CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8060"]

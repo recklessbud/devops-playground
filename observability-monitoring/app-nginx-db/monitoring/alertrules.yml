@@ -1,0 +1,180 @@
+groups:
+  - name: server-alerts
+    rules:
+      - alert: InstanceDown
+        expr: up{job="Host"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Instance {{ $labels.instance }} is down"
+          description: "Instance has been down for more than 1 minute."
+
+      - alert: HighCPUUsage
+        expr: sum by (instance) (irate(node_cpu_seconds_total{mode="system"}[5m])) * 100 > 80
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage detected on {{ $labels.instance }}"
+          description: "CPU usage is above 80% for more than 1 minute."
+
+      - alert: HighStorageUsage
+        expr: (node_filesystem_size_bytes{mountpoint="/"} - node_filesystem_avail_bytes{mountpoint="/"}) / node_filesystem_size_bytes{mountpoint="/"} > 0.9
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High storage usage detected on {{ $labels.instance }}"
+          description: "Storage usage is above 90% for more than 2 minutes."
+
+      - alert: HighMemoryUsage
+        expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes > 0.9
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High memory usage detected on {{ $labels.instance }}"
+          description: "Memory usage is above 90% for more than 2 minutes."
+
+
+
+  - name: db-alerts
+    rules:
+      - alert: DatabaseDown
+        expr: up{job="database"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Database {{ $labels.instance }} is down"
+          description: "Database has been down for more than 1 minute."
+
+      - alert: DatabaseRestarted
+        expr: time() - process_start_time_seconds{job="database"} > 60
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Database {{ $labels.instance }} restarted"
+          description: "Database has been restarted less than a minute ago."
+
+      - alert: ConnectionPoolNearLimit
+        expr: |
+            pg_stat_activity_count / pg_settings_max_connections * 100 > 85
+        for: 5m
+        labels:
+          severity: critical  
+        annotations:
+          summary: Connection Pool over 85% full on {{ $labels.instance }}
+          description: "Connection Pool is over 85% full"
+
+
+
+  - name: webapp-alerts
+    rules:
+      - alert: WebAppDown
+        expr: up{job="app"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Web Application {{ $labels.instance }} is down"
+          description: "Web Application has been down for more than 1 minute."
+
+      - alert: AppRestarted
+        expr: time() - process_start_time_seconds{job="app"} < 60
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: "App restarted"
+          description: "{{ $labels.instance }} restarted less than 60 seconds ago."
+
+      - alert: HighErrorRate
+        expr: sum(rate(http_requests_total{status=~"5.."}[5m])) / sum(rate(http_requests_total[5m])) * 100 > 5
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High Error Rate on {{ $labels.instance }}"
+          description: "More than 5% of HTTP requests are failing with 5xx Server Errors over the last 5 minutes."
+
+      - alert: APIResponseTooSlow
+        expr: sum(rate(http_request_duration_seconds_sum[5m])) / sum(rate(http_request_duration_seconds_count[5m])) > 2
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "API is extremely slow on {{ $labels.instance }}"
+          description: "The average response time for the web app has been over 2 seconds for the last 2 minutes."
+
+      - alert: TrafficDroppedToZero
+        expr: sum(rate(http_requests_total[5m])) == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "No traffic on {{ $labels.instance }}"
+          description: "The application has received exactly zero HTTP requests in the last 5 minutes. Did the load balancer break?"
+
+
+  - name: nginx-alerts
+    rules:
+      - alert: nginxDown
+        expr: up{job="nginx"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Nginx {{ $labels.instance }} is down"
+          description: "Nginx has been down for more than 1 minute."
+
+      - alert: NginxRestarted
+        expr: time() - process_start_time_seconds{job="nginx"} < 60
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Nginx restarted"
+          description: "{{ $labels.instance }} restarted less than 60 seconds ago."
+
+      - alert: SSLCertExpired
+        expr: nginx_ssl_certificate_expiry_seconds < 0
+        for: 0m
+        labels:
+          severity: critical
+        annotations:
+          summary: "SSL certificate has EXPIRED"
+          description: "SSL cert on {{ $labels.instance }} is expired — HTTPS is broken."
+
+      - alert: ConnectionsAcceptedDropping
+        expr: rate(nginx_connections_accepted[5m]) == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Nginx stopped accepting connections"
+          description: "{{ $labels.instance }} is not accepting new connections — may be overloaded or crashed."
+
+      - alert: SpikeIn503Errors
+        expr: rate(nginx_http_requests_total{status="503"}[5m]) > 10
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "503 Service Unavailable spike"
+          description: "{{ $labels.instance }} is returning 503s at {{ $value | printf \"%.0f\" }} req/s — upstream may be down."
+  
+  
+      - alert: RequestRateDrop
+        expr: |
+          rate(nginx_http_requests_total[5m]) < 10
+          and
+          rate(nginx_http_requests_total[5m] offset 10m) > 100
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Nginx request rate dropped suddenly"
+          description: "Traffic on {{ $labels.instance }} dropped significantly — possible upstream failure."

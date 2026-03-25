@@ -1,8 +1,18 @@
 [
   {
-    "labels": {
-      "job": "Host"
-    },
-    "targets": ["postgres_exporter:9187", "node-exporter:9100", "app-c:8070", "nginx-exporter:9113"]
+    "labels": {"job": "Host"},
+    "targets": ["node-exporter:9100"] 
+  }, 
+  {
+    "labels": {"job": "database"},
+    "targets": ["postgres_exporter:9187"]
+  }, 
+  {
+    "labels": {"job": "nginx"},
+    "targets": ["nginx-exporter:9113"]
+  },
+  {
+    "labels": {"job": "app"},
+    "targets": ["app-c:8070"]
   }
 ]
