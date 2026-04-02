@@ -15,6 +15,6 @@ A hands-on project where I built a basic AWS VPC with a public and private subne
  
 I documented the full process, including mistakes and fixes, on Dev.to:
  
-👉 [Read the full article](#) ← replace with your Dev.to link
+👉 [Read the full article](https://dev.to/recklessbud_19/01-vpc-aws-privatepublic-subnet-architecture-4c8p-temp-slug-2940891?preview=7879b3241d0d32abe7576c599d8cab6c3d0f946d7a78ba4687831e3794d8aaf2cffd7b79e4a92b1cf59fec8c58d3f14e48b7b1bbbb3e348f6b37c295) 
  
 ---
