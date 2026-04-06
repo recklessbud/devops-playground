@@ -1,0 +1,176 @@
+name: ${PROJECT_NAME}
+
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    container_name: ${APP_CONTAINER_NAME}
+    ports:
+      - 8070:8071
+    volumes:
+      - app_logs:/var/log/myapp
+    env_file:
+      - .env
+    depends_on:
+      database:
+        condition: service_healthy
+    networks:
+      - monitoring
+
+  nginx:
+    image: nginx:latest
+    restart: always
+    volumes:
+      - nginx_logs:/var/log/nginx
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - 80:80
+    depends_on:
+      - api
+    networks:
+      - monitoring
+  
+    
+  database:
+    restart: unless-stopped
+    image: postgres:17.5-alpine3.22
+    container_name: ${POSTGRES_CONTAINER_NAME}
+    env_file:
+      - .env
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    healthcheck:
+      test: ["CMD-SHELL", "psql -U ${POSTGRES_USER} -d ${POSTGRES_DB} -c 'SELECT 1'"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - monitoring
+
+  nginx-exporter:
+    image: nginx/nginx-prometheus-exporter:latest
+    restart: always
+    command: -nginx.scrape-uri=http://nginx:80/stub_status
+    ports: 
+      - 9113:9113
+    depends_on:
+      - nginx
+    networks:
+      - monitoring
+
+  promtail:
+    image: grafana/promtail:latest
+    depends_on:
+      - loki                 
+    volumes:
+      - ./monitoring/promtail-config.yml:/etc/promtail/promtail-config.yaml
+      - /var/log:/var/log
+      - app_logs:/var/log/myapp
+      - nginx_logs:/var/log/nginx
+      - /var/lib/docker/containers:/var/lib/docker/containers  
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: always
+    command: -config.file=/etc/promtail/promtail-config.yaml
+    ports:
+      - 9080:9080
+    networks:
+      - monitoring
+
+  loki:
+    image: grafana/loki:latest
+    ports:
+      - 3100:3100
+    volumes:
+      - ./monitoring/loki-config.yml:/etc/loki/loki-config.yaml
+    command: -config.file=/etc/loki/loki-config.yaml
+    networks:
+      - monitoring
+
+  grafana:
+    restart: always
+    image: grafana/grafana:latest
+    container_name: ${GRAFANA_CONTAINER_NAME}
+    env_file:
+      - .env
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./monitoring/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
+    depends_on:
+      database:
+          condition: service_healthy
+    networks:
+      - monitoring
+
+
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./monitoring/prometheus-config.yml:/etc/prometheus/prometheus.yml
+      - ./monitoring/targets.json:/etc/prometheus/targets.json
+      - ./monitoring/alertrules.yml:/etc/prometheus/alertrules.yml
+    restart: always
+    ports:
+      - 9090:9090
+    networks:
+      - monitoring
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    ports:
+      - 9100:9100
+    networks:
+      - monitoring
+
+  postgres_exporter:
+    image: prometheuscommunity/postgres-exporter
+    container_name: postgres_exporter
+    restart: always
+    env_file:
+      - .env
+    environment:
+      DATA_SOURCE_NAME: "postgresql://user89:${POSTGRES_PASSWORD}@${POSTGRES_CONTAINER_NAME}:5432/some_db?sslmode=disable"
+    ports:
+      - 9187:9187
+    depends_on:
+      - database
+      - prometheus
+    networks:
+      - monitoring
+
+  alertmanager:
+    image: prom/alertmanager:v0.27.0
+    restart: unless-stopped
+    container_name: alertsudo
+    ports:
+      - 9093:9093
+    volumes:
+      - ./monitoring/alertmanager.yml:/etc/prometheus/alertmanager.yml
+    command:
+      - --config.file=/etc/prometheus/alertmanager.yml
+    depends_on:
+      - prometheus
+    networks:
+      - monitoring
+    
+
+
+volumes:
+  postgres-data:
+  app_logs:
+  nginx_logs:
+
+
+
+networks:
+  monitoring:
+    driver: bridge

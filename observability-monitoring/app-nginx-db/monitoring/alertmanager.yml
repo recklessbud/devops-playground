@@ -1,0 +1,15 @@
+route:
+  group_by: ['alertname']
+  receiver: deepmail
+
+receivers:
+- name: deepmail
+  email_configs:
+  - to: 'bureck400@gmail.com'
+    from: 'alexanderglover478@gmail.com'
+    smarthost: 'smtp.gmail.com:587'
+    auth_username: 'alexanderglover478@gmail.com'
+    auth_password: 'khxz upgb qsyt daob'
+    headers:
+      Subject: 'Alert: {{ .GroupLabels.alertname }}'
+    text: '{{ range .Alerts }}{{ .Annotations.summary }}{{ end }}'

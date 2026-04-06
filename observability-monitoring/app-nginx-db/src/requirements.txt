@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+loguru
+prometheus-fastapi-instrumentator
+python-decouple
+psycopg[binary]
+sqlmodel
+sqlalchemy

@@ -1,0 +1,8 @@
+[
+  {
+    "labels": {
+      "job": "Host"
+    },
+    "targets": ["p-m:9090", "postgres_exporter:9187"]
+  }
+]
