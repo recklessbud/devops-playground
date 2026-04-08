@@ -1,25 +1,25 @@
+# nginx error file
+
 import re
-pattern = r'(\w+\s+\d+\s[\d:]+).*Failed password for (\w+) from ([\d.]+)'
-with open('/var/log/auth.log', 'r') as f:
-    for line in f:
-        match =  re.search(pattern, line)
-        if match:
-            time = match.group(1)
-            user = match.group(2)
-            ip = match.group(3)
-            print(f'time: {time}, user: {user}, ip: {ip}')
-        else:
-            print('no match')
+import csv
+import sys
 
 
+errors = []
 
-# reading the lines
-# failed = []
-# for line in data:
-#     if 'forbidden' in line.lower():
-#         failed.append(line)
+pattern = r'(\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2}) \[(\w+)\] \d+#\d+: \*\d+ .+? while connecting to upstream, client: ([\d.]+), server: \S+, request: "(\w+ \S+ \S+)", upstream: "([^"]+)"'
+with open('/var/log/nginx/error.log.1', "r") as f:
+    lines = f.readlines()
+    for line in lines:
+        results = re.findall(pattern, line)
+        if results != None:
+            for m in results:
+                if m !=[]:
+                    errors.append(results)
 
 
-
-# for line in data:
-#     print(line)
+with open("error_message.json", "w", newline='') as error_list:
+    for some in errors:
+        for m in some:
+            raw_time, level, client, request, upstream = m
+        error_list.write(f"Raw_time: {raw_time} Level: {level} Client: {client} Request: {request} Stream: {upstream}\n")

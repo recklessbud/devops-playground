@@ -1,0 +1,13 @@
+Raw_time: 2025/06/12 11:06:56 Level: error Client: 127.0.0.1 Request: GET / HTTP/1.1 Stream: http://127.0.0.1:4001/
+Raw_time: 2025/06/12 11:06:56 Level: error Client: 127.0.0.1 Request: GET /favicon.ico HTTP/1.1 Stream: http://127.0.0.1:4001/favicon.ico
+Raw_time: 2025/06/12 11:11:16 Level: error Client: 127.0.0.1 Request: GET / HTTP/1.1 Stream: http://127.0.0.1:4001/
+Raw_time: 2025/06/12 11:11:16 Level: error Client: 127.0.0.1 Request: GET /favicon.ico HTTP/1.1 Stream: http://127.0.0.1:4001/favicon.ico
+Raw_time: 2025/06/12 11:12:45 Level: error Client: 127.0.0.1 Request: GET / HTTP/1.1 Stream: http://127.0.0.1:4001/
+Raw_time: 2025/06/12 11:12:46 Level: error Client: 127.0.0.1 Request: GET /favicon.ico HTTP/1.1 Stream: http://127.0.0.1:4001/favicon.ico
+Raw_time: 2025/06/12 11:23:57 Level: error Client: 127.0.0.1 Request: GET / HTTP/1.1 Stream: http://127.0.0.1:4001/
+Raw_time: 2025/06/12 11:23:57 Level: error Client: 127.0.0.1 Request: GET /favicon.ico HTTP/1.1 Stream: http://127.0.0.1:4001/favicon.ico
+Raw_time: 2025/06/12 11:34:52 Level: error Client: 127.0.0.1 Request: GET / HTTP/1.1 Stream: http://127.0.0.1:4001/
+Raw_time: 2025/06/12 11:34:52 Level: error Client: 127.0.0.1 Request: GET /favicon.ico HTTP/1.1 Stream: http://127.0.0.1:4001/favicon.ico
+Raw_time: 2025/06/12 11:37:04 Level: error Client: 127.0.0.1 Request: GET / HTTP/1.1 Stream: http://127.0.0.1:4001/
+Raw_time: 2025/06/12 11:37:05 Level: error Client: 127.0.0.1 Request: GET /favicon.ico HTTP/1.1 Stream: http://127.0.0.1:4001/favicon.ico
+Raw_time: 2025/06/12 12:39:09 Level: error Client: 127.0.0.1 Request: GET /auth/login HTTP/1.1 Stream: http://127.0.0.1:4001/auth/login
