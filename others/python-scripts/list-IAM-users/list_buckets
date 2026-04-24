@@ -1,0 +1,17 @@
+import boto3
+
+class S3Buckets:
+    def __init__(self):
+        self.client = boto3.client('s3')
+        self.buckets = []
+
+    def list_buckets(self):
+        response = self.client.list_buckets()
+        for bucket in response['Buckets']:
+            self.buckets.append(bucket['Name'])
+        return self.buckets
+    
+
+if __name__ == "__main__":
+    s3 = S3Buckets()
+    print(s3.list_buckets())
