@@ -1,0 +1,22 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowS3ToPublish",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "s3.amazonaws.com"
+      },
+      "Action": "SNS:Publish",
+      "Resource": "$env:SNS_TOPIC_ARN",
+      "Condition": {
+        "StringEquals": {
+          "aws:SourceAccount": "$env:AWS_ACCOUNT_ID"
+        },
+        "StringLike": {
+          "aws:SourceArn": "arn:aws:sns:us-east-1:3013012002HY:backup-alerts-3dr9p2"
+        }
+      }
+    }
+  ]
+}
