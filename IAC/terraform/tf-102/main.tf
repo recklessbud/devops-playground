@@ -11,16 +11,6 @@ resource "random_string" "suffix" {
 
 
 locals {
-    common_tags = merge(
-        {
-            Environment = var.environment
-            Project = "AWS Private/Public Subnet Architecture"
-            ManagedBy = "Terraform"
-            Owner = data.aws_caller_identity.current.arn
-        },
-        var.tags
-    )
-
 vpc_name = "${var.environment}-vpc-${random_string.suffix.result}"
 public_subnet = "${var.environment}-public-subnet-${random_string.suffix.result}"
 private_subnet = "${var.environment}-private-subnet-${random_string.suffix.result}"
@@ -54,7 +44,7 @@ resource "aws_subnet" "public_subnet" {
 # Private Subnet
 resource "aws_subnet" "private_subnet" {
   vpc_id = aws_vpc.main_vpc.id
-  cidr_block = var.private_subnet-cidr
+  cidr_block = var.private_subnet_cidr
   availability_zone = "${var.aws_region}b"
 
   tags = {
@@ -150,7 +140,7 @@ resource "aws_security_group" "ec2_sg_private" {
     from_port = 22
     to_port = 22
     protocol = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    security_groups = [ aws_security_group.ec2_sg_public.id ]
   }
   ingress {
     description = "HTTP"

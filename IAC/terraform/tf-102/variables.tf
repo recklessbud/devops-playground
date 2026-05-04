@@ -62,6 +62,11 @@ variable "vpc_cidr" {
   type = string
   default = "192.168.0.0/16"
 
+  validation {
+    condition = can(cidrhost(var.vpc_cidr, 0))
+    error_message = "Must ba a valid Cidr block"
+  }
+
 }
 
 
@@ -72,7 +77,7 @@ variable "public_subnet_cidr" {
 }
 
 
-variable "private_subnet-cidr" {
+variable "private_subnet_cidr" {
   description = "Private subnet cidr"
   type = string
   default = "192.168.2.0/24"
@@ -85,6 +90,10 @@ variable "instance_type" {
   description = "instance type"
   type = string
   default = "t2.micro"
+ validation {
+    condition     = contains(["t2.micro", "t3.micro", "t3.small"], var.instance_type)
+    error_message = "Must be a valid free-tier or small instance type."
+  }
 }
 
 

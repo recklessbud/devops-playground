@@ -30,3 +30,14 @@ output "private_subnet_id" {
   description = " private_subnet used id"
   value = aws_subnet.private_subnet.id
 }
+
+output "bastion_hop_command" {
+  description = "SSH hop from public to private EC2"
+  value       = "ssh -i ${var.key_name}.pem ubuntu@${aws_instance.ubuntu_server_private.private_ip}"
+}
+
+
+output "public_instance_server" {
+  description = "SSH hop from public to private EC2"
+  value       = "ssh -i ~/.ssh/${var.key_name}.pem ubuntu@${aws_instance.ubuntu_server_public.public_ip}"
+}
