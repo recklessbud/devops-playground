@@ -152,3 +152,42 @@ variable "additional_tags" {
   type        = map(string)
   default     = {}
 }
+
+
+
+variable "vpc_cidr_block" {
+  description = "Main cidr for the VPC"
+  type = string
+  default = "192.168.0.0/16"
+
+  validation {
+    condition = can(cidrhost(var.vpv_cidr_block, 0))
+    error_message = "Must be a valid CIDR block"
+  }
+}
+
+
+
+variable "subnet_cidr_block" {
+  description = "Main cidr for the subnet"
+  type = string
+  default = "192.168.1.0/24"
+
+  validation {
+    condition = can(cidrhost(var.subnet_cidr_block, 0))
+    error_message = "Must be a valid CIDR block for the subnet"
+  }
+}
+
+
+
+variable "subnet_2_cidr_block" {
+  description = "secondary subnet sidr block"
+  type = string
+  default = "192.168.2.0/24"
+
+  validation {
+    condition = can(cidrhost(var.subnet_2_cidr_block, 0))
+    error_message = "Must be a valid CIDR block for the subnet"
+  }
+}
