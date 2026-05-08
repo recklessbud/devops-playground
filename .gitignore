@@ -5,3 +5,7 @@
 __pycache__
 uv.lock
 myv
+.env
+todo.db
+__pycache__
+LICENSE

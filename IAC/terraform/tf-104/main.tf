@@ -195,7 +195,17 @@ resource "aws_lambda_function_url" "pal_generator_url" {
 resource "aws_lambda_permission" "allow_function_url" {
   statement_id = "AllowPublicAccess"
   action = "lambda:InvokeFunctionUrl"
+
   function_name = aws_lambda_function.pal_generator.function_name
   principal = "*"
   function_url_auth_type = "NONE"
+}
+
+
+resource "aws_lambda_permission" "invoke_function_url" {
+  statement_id = "FunctionURLInvokeAllowPublicAccess"
+  action = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.pal_generator.function_name
+  principal = "*"
+
 }
